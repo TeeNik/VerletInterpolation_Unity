@@ -4,15 +4,41 @@ using UnityEngine;
 
 public class VerletObject : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public float Radius = 50.0f;
+    public Vector3 PositionCurrent;
+
+    protected Vector3 PositionOld;
+    protected Vector3 Acceleration;
+
+    public void Init(Vector3 initialPos, float radius)
     {
-        
+        PositionCurrent = initialPos;
+        PositionOld = initialPos;
+        Radius = radius;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdatePosition(float deltaTime)
     {
-        
+        Vector3 Velocity = PositionCurrent - PositionOld;
+        PositionOld = PositionCurrent;
+        PositionCurrent = PositionCurrent + Velocity + Acceleration * deltaTime * deltaTime;
+        Acceleration = Vector3.zero;
     }
+
+    public void Accelerate(Vector3 acc)
+    {
+        Acceleration += acc;
+    }
+
+    public Vector3 GetVelocity(float deltaTime)
+    {
+        return (PositionCurrent - PositionOld) / deltaTime;
+    }
+
+    public void SetVelocity(Vector3 Velocity, float deltaTime)
+    {
+        PositionOld = PositionCurrent - (Velocity * deltaTime);
+    }
+
 }
