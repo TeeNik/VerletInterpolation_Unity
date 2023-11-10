@@ -1,22 +1,21 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml;
 using UnityEngine;
-using UnityEngine.Video;
 
 public class VerletSolver : MonoBehaviour
 {
     public VerletObject ObjectPrefab;
+    public Constraint Constraint = new RectConstraint();
+    public Transform Parent;
+    public Vector3 Gravity = new Vector3(0, 1000, 0);
 
+    protected List<VerletObject> Objects = new List<VerletObject>();
 
-    protected List<VerletObject> Objects;
-
-    protected int NumOfObjects = 8;
     protected float Time = 0;
 
     public VerletObject SpawnObject(Vector3 position, float radius)
     {
-        VerletObject Object = Instantiate(ObjectPrefab, position, Quaternion.identity) as VerletObject;
+        VerletObject Object = Instantiate(ObjectPrefab, position, Quaternion.identity, Parent) as VerletObject;
+        Object.Init(position, radius);
         Objects.Add(Object);
         return Object;
     }
@@ -39,16 +38,18 @@ public class VerletSolver : MonoBehaviour
 
     protected void ApplyGravity()
     {
-        Vector3 gravity = new Vector3(0, 1000, 0);
         foreach (var obj in Objects)
         {
-            obj.Accelerate(gravity);
+            obj.Accelerate(Gravity);
         }
     }
 
     protected void ApplyConstraints()
     {
-
+        foreach (var obj in Objects)
+        {
+            Constraint.ApplyConstraint(obj);
+        }
     }
 
     protected void SolveCollisions()

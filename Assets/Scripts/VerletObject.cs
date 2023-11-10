@@ -24,6 +24,9 @@ public class VerletObject : MonoBehaviour
         PositionOld = PositionCurrent;
         PositionCurrent = PositionCurrent + Velocity + Acceleration * deltaTime * deltaTime;
         Acceleration = Vector3.zero;
+
+        //TODO move to upper level
+        transform.position = PositionCurrent;
     }
 
     public void Accelerate(Vector3 acc)
