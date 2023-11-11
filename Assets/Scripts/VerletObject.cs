@@ -11,22 +11,19 @@ public class VerletObject : MonoBehaviour
     protected Vector3 PositionOld;
     protected Vector3 Acceleration;
 
-    public void Init(Vector3 initialPos, float radius)
+    public virtual void Init(Vector3 initialPos, float radius)
     {
         PositionCurrent = initialPos;
         PositionOld = initialPos;
         Radius = radius;
     }
 
-    public void UpdatePosition(float deltaTime)
+    public virtual void UpdatePosition(float deltaTime)
     {
-        Vector3 Velocity = PositionCurrent - PositionOld;
+        Vector3 velocity = PositionCurrent - PositionOld;
         PositionOld = PositionCurrent;
-        PositionCurrent = PositionCurrent + Velocity + Acceleration * deltaTime * deltaTime;
+        PositionCurrent = PositionCurrent + velocity + Acceleration * deltaTime * deltaTime;
         Acceleration = Vector3.zero;
-
-        //TODO move to upper level
-        transform.position = PositionCurrent;
     }
 
     public void Accelerate(Vector3 acc)
