@@ -9,10 +9,10 @@ public class VerletSolver : MonoBehaviour
     public Vector3 Gravity = new Vector3(0, 1000, 0);
 
     protected List<VerletObject> Objects = new List<VerletObject>();
+    protected List<Connection> Connections = new List<Connection>();
 
-    protected float Time = 0;
 
-    public VerletObject SpawnObject(Vector3 position, float radius)
+    public VerletObject CreateObject(Vector3 position, float radius)
     {
         VerletObject Object = Instantiate(ObjectPrefab, position, Quaternion.identity, Parent) as VerletObject;
         Object.Init(position, radius);
@@ -20,9 +20,14 @@ public class VerletSolver : MonoBehaviour
         return Object;
     }
 
+    public void CreateConnection(VerletObject o1, VerletObject o2)
+    {
+        var connection = new Connection(o1, o2, (o2.PositionCurrent - o1.PositionCurrent).magnitude);
+        Connections.Add(connection);
+    }
+
     public void UpdateSolver(float deltaTime)
     {
-        Time += deltaTime;
         const int subSteps = 8;
         float subDeltaTime = deltaTime / subSteps;
 
@@ -32,7 +37,7 @@ public class VerletSolver : MonoBehaviour
             SolveCollisions();
             ApplyConstraints();
             UpdateObjects(subDeltaTime);
-            UpdateLinks(subDeltaTime);
+            UpdateConnections(subDeltaTime);
         }
     }
 
@@ -89,9 +94,16 @@ public class VerletSolver : MonoBehaviour
         }
     }
 
-    protected void UpdateLinks(float deltaTime)
+    protected void UpdateConnections(float deltaTime)
     {
-
+        foreach (var connection in Connections)
+        {
+            Vector3 delta = connection.O1.PositionCurrent - connection.O2.PositionCurrent;
+            float current = delta.magnitude;
+            float f = (current - connection.Length) / current;
+            connection.O1.PositionCurrent -= f * 0.5f * delta;
+            connection.O2.PositionCurrent += f * 0.5f * delta;
+        }
     }
 
 
